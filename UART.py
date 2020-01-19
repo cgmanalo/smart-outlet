@@ -13,3 +13,4 @@ while True:
     received_data += ser.read(data_left)
     print (received_data)                   #print received data
     ser.write(received_data)                #transmit data serially 
+# must close port here
