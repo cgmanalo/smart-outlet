@@ -1,38 +1,12 @@
 
 
-//Site Controller Program - Model B
-//EE200D Capstone Project
-//Copyright (c) 2018-2019, K. Caringal, R. Burgos, P. Castillo, Cesar G. Manalo, Jr. (Adviser)
+//Home Automation
+//EE200D- Capstone Project
+//Copyright (c) 2019-2020, A. Malgapo, G. Navarro, Cesar G. Manalo, Jr. (Adviser)
 
-//#include <Wire.h>
-//#include <LiquidCrystal.h>
-//#include <LiquidCrystal_I2C.h>
-//#include <DS1302.h>
 #include <EEPROM.h>
 #include <avr/wdt.h>
 
-//Definitions for LCD
-//#define I2C_ADDR 0x3F // Hardware Address of LCD
-//#define BACKLIGHT_PIN 3
-//#define En_pin  2
-//#define Rw_pin  1
-//#define Rs_pin  0
-//#define D4_pin  4
-//#define D5_pin  5
-//#define D6_pin  6
-//#define D7_pin  7
-
-//LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin); //Create a LiquidCrystal_I2C object.
-
-//Definitions for RTC
-//#define kCePin 5  // Chip Enable
-//#define kIoPin 6  // Input/Output
-//#define kSclkPin 7  // Serial Clock 
-//DS1302 rtc(kCePin, kIoPin, kSclkPin); //Create a RTC Object
-
-//Definitions for Power Analyzer
-//#define VoltRMS "D00"
-//#define AmpRMS  "D01"
 #define FLAG '~'
 
 char ctlrAddr;
