@@ -1,5 +1,3 @@
-
-
 //Home Automation
 //EE200D- Capstone Project
 //Copyright (c) 2019-2020, A. Malgapo, G. Navarro, Cesar G. Manalo, Jr. (Adviser)
