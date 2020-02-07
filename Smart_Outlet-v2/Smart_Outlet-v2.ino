@@ -5,10 +5,21 @@
 #include <EEPROM.h>
 #include <avr/wdt.h>
 
-#define FLAG '~'
+#define START_FLAG '~'
+#define END_FLAG '^'
+#define VALID true
+unsigned long Start_Timer;
+unsigned long Start_Timer2;
+char Data_Field[20];
+char Data_Char;
+String Device_Name;
+String Device_Command;
+
 String serialData;
 const byte Outlet1 = 2;
 const byte Outlet2 = 3;
+
+void(* resetFunc) (void) = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -20,56 +31,66 @@ void setup() {
 }
 
 void loop() {
-  serialData = extractSerialData2();
-  if (serialData.length()>0){
-      if (serialData == "HB"){
-          sendReply("Room Controller Ok.");
-      }
-      else if(serialData == "ON-OUTLET1"){
-          if(OPEROutlet(Outlet1,"ON")){
-              sendReply("OUTLET1 is ON.");
-          }
-          else{
-              sendReply("OUTLET1 is OFF.");
-          }
-      }
-      else if(serialData == "OFF-OUTLET1"){
-          if(OPEROutlet(Outlet1,"OFF")){
-              sendReply("OUTLET1 is ON.");
-          }
-          else{
-              sendReply("OUTLET1 is OFF.");
-          }
-      }
-      else if(serialData == "TOG-OUTLET1"){
-          if(OPEROutlet(Outlet1,"TOG")){
-              sendReply("OUTLET1 is ON.");
-          }
-          else{
-              sendReply("OUTLET1 is OFF.");
-          }
+
+  if (GetSerialData() == VALID) {
+    serialData = (String)Data_Field;
+    Device_Name = extractField(serialData,1);
+    Device_Command = extractField(serialData,2);
+    if(Device_Name == "OUTLET1"){
+      if(OPEROutlet1(Device_Command)){
+        sendReply("\n" + Device_Name + " is ON.");
       }
       else{
-          Serial.println(serialData);
+        sendReply("\n" + Device_Name + " is OFF.");
       }
+    }
+    else if(Device_Name == "OUTLET2"){
+      if(OPEROutlet2(Device_Command)){
+        sendReply("\n" + Device_Name + " is ON.");
+      }
+      else{
+        sendReply("\n" + Device_Name + " is OFF.");
+      }
+    }
+    else if(Device_Name == "CONTROL1"){
+      if(Device_Command == "RST"){
+        resetFunc();
+      }
+        sendReply("\n" + Device_Name + " Ok.");
+    }
+    else{
+        Serial.println("\nUnrecognize Device Name or Instruction.");
+    }
   }
-
 }
 
 ///////////////////////////////////////////////
 //***** SUBROUTINES *****//
-bool OPEROutlet(int OutletNo, String Operation){
+bool OPEROutlet1(String Operation){
   if (Operation == "ON"){
-      digitalWrite(OutletNo,HIGH);
+      digitalWrite(Outlet1,HIGH);
   }
   else if(Operation == "OFF"){
-      digitalWrite(OutletNo,LOW);
+      digitalWrite(Outlet1,LOW);
   }
   else if(Operation == "TOG"){
-      digitalWrite(OutletNo,!digitalRead(OutletNo));
+      digitalWrite(Outlet1,!digitalRead(Outlet1));
   }
   delay(10);
-  return(digitalRead(OutletNo));
+  return(digitalRead(Outlet1));
+}
+bool OPEROutlet2(String Operation){
+  if (Operation == "ON"){
+      digitalWrite(Outlet2,HIGH);
+  }
+  else if(Operation == "OFF"){
+      digitalWrite(Outlet2,LOW);
+  }
+  else if(Operation == "TOG"){
+      digitalWrite(Outlet2,!digitalRead(Outlet2));
+  }
+  delay(10);
+  return(digitalRead(Outlet2));
 }
 
 void serialFlush(){
@@ -114,4 +135,128 @@ void Preamble()
   Serial.println("EE200D-2019 Capstone Project");
   Serial.println("Copyright (c) 2019-2020, A. Malgapo, G. Navarro, Cesar G. Manalo, Jr. (Adviser)");
   delay(500);
+}
+bool GetSerialData(){
+  if (Serial.read() == START_FLAG){
+    Start_Timer = millis();
+    while(millis()-Start_Timer < 100){
+      if(Serial.read() == START_FLAG){
+        Start_Timer = millis();
+        while(millis()-Start_Timer < 100){
+          if(Serial.read() == START_FLAG){ //<<<<<
+
+            int i=0;
+            Data_Field[0] = '\0';
+            Start_Timer2 = millis();
+            while(millis()-Start_Timer2 < 3000){
+              Start_Timer = millis();
+              while(millis()-Start_Timer < 100){
+                Data_Char = Serial.read();
+                if(Data_Char == END_FLAG){
+                  Start_Timer = millis();
+                  while(millis()-Start_Timer < 100){
+                    Data_Char = Serial.read();
+                    if(Data_Char == END_FLAG){
+                      Start_Timer = millis();
+                      while(millis()-Start_Timer < 100){
+                        Data_Char = Serial.read();
+                        if(Data_Char == END_FLAG){
+                          Data_Field[i++] = '\0';
+                          return true;
+                        }
+                        else if(Data_Char != -1){
+                          Data_Field[i++] = Data_Char;
+                          break;
+                        }
+                      }
+                    }
+                    else if(Data_Char != -1){
+                      Data_Field[i++] = Data_Char;
+                      break;
+                    }
+                  }
+                  break;
+                }
+                else if(Data_Char != -1){
+                  Data_Field[i++] = Data_Char;
+                  break;
+                }
+              }
+            }
+            break;
+          } //<<<<<
+        }
+        break;
+      }
+    }
+  }
+  return false;
+}
+
+
+String extractField(String rawString, int fieldNum){
+   char dataArray[30];
+   char fieldArray[25];   
+   char inChar;
+   
+   rawString.toCharArray(dataArray,rawString.length()+1);
+
+   //first field
+   if (fieldNum == 1){
+     int i=0;
+     for(i;i<rawString.length();i++){
+       inChar = dataArray[i];
+       if (inChar == '|'){
+         break;
+       }
+       fieldArray[i] = inChar;
+     } 
+     fieldArray[i]='\0';
+     return fieldArray;
+   }
+
+   //second field
+   else if (fieldNum == 2) {
+     int i = rawString.indexOf('|')+1;
+     int j=i;
+     for(i;i<rawString.length();i++){
+       inChar = dataArray[i];
+       if (inChar == '|'){
+         break;
+       }
+       fieldArray[i-j] = inChar;
+     }
+     fieldArray[i-j]='\0';
+     return fieldArray;
+   }
+
+  //third field
+   else if (fieldNum == 3) {
+     int i = rawString.indexOf('|',rawString.indexOf('|')+1)+1;
+     int j=i;
+     for(i;i<rawString.length();i++){
+       inChar = dataArray[i];
+       if (inChar == '|'){
+         break;
+       }
+       fieldArray[i-j] = inChar;
+     }
+     fieldArray[i-j]='\0';
+     return fieldArray;
+   }
+   else if (fieldNum == 4) {
+     int i = rawString.indexOf('|',rawString.indexOf('|',rawString.indexOf('|')+1)+1)+1;
+     int j=i;
+     for(i;i<rawString.length();i++){
+       inChar = dataArray[i];
+       if (inChar == '|'){
+         break;
+       }
+       fieldArray[i-j] = inChar;
+     }
+     fieldArray[i-j]='\0';
+     return fieldArray;
+   }
+     
+   return "";
 }
