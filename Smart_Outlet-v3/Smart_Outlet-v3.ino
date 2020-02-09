@@ -62,6 +62,9 @@ void loop() {
         sendReply("\n" + Device_Name + " is OFF.");
       }
     }
+    else if(Device_Name == "HELP"){
+      ShowHelp();
+    }
     else if(Device_Name == "CONTROL1"){
       if(Device_Command == "RST"){
         resetFunc();
@@ -140,12 +143,18 @@ void watchdogSetup(void)
 
 void Preamble()
 {
-  delay(500);
   Serial.println("\nSmart Outlet ver. 1.1 - Model A\n");
   Serial.println("EE200D-2019 Capstone Project");
   Serial.println("Copyright (c) 2019-2020, A. Malgapo, G. Navarro, Cesar G. Manalo, Jr. (Adviser)");
-  delay(500);
+  Serial.println("\nType '~~~HELP^^^' to show available commands.");
 }
+
+void ShowHelp()
+{
+  Serial.println("\n~~~OUTLET<1-2>|<ON,OFF,TOG,''>^^^ -- to turn on, off, toggle, or query OUTLET");
+  Serial.println("~~~CONTROL1|<'',RST>^^^       -- to check, reset controller");
+}
+
 bool GetSerialData(){
   if (Serial.read() == START_FLAG){
     Start_Timer = millis();
