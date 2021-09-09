@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script src = js/SmartEngine_v1.js text = "text/javascript"></script>
+      <style>
+	body {
+            background-color: black;
+            background-image: linear-gradient(to right, #6ee326, white);
+            background-size: 100%;
+            background-repeat: repeat;
+
+        }
+        #container {
+
+         }
+
+        #title {
+            text-shadow:  1px 3px 2px #2d2d2d;
+            text-align: left;
+            font-size: large;
+            color: darkgreen;
+            width: 100%;
+            height: 50px;
+         }
+         #top {
+            font-size: 20px;
+            float:left;
+            width: 100%;
+            height: 100px;
+         }
+         #top_left {
+            color: #2d2d2d;
+            font: arial;
+            float:left;
+            width: 59.5%;
+            height: 90%;
+         }
+         #top_middle {
+            text-shadow: 1px 1px black;
+            color: #4c4c4c;
+            float:left;
+            width: 9.5%;
+            height: 90%;
+         }
+         #top_right {
+            color: #4c4c4c;
+            float:left;
+            width: 29.5%;
+            height: 90%;
+         }
+         #middle{
+            float:left;
+            width: 100%;
+            height: 300px;
+         }
+         #bottom1{
+            float:left;
+            width: 100%;
+            height: 50px;
+         }
+         #bottom2{
+            float:left;
+            width: 100%;
+            height: 130px;
+         }
+	 .room{
+            float:left;
+            width: 49%;
+            height: 52%;
+            border-style: solid;
+            border-width: 1px;
+            border-color: green;
+	 }
+      </style>
+   </head>
+
+   <body>
+      
+      <div id="container">
+         <div id="title">
+                <h2> &nbsp;&nbsp;Manalo Smart Home </h2>    
+         </div>
+         <div id="top">
+            <div id=top_left>
+            	&nbsp;&nbsp;
+                Connection status: <span id = "connectmessage">Disconnected from server</span>
+            	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            	<span id = "temp">Temp</span>
+            	<p>
+            		&nbsp;&nbsp;<input style="height:30px;width:80px" id="sconnect" type="submit" name="command1" value="Connect" onclick = "Connect()" onmouseover = "ChangeColorOn()" onmouseout = "ChangeColorOff()" /> 
+            		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            	<span id="users"></span> 
+            	</p>
+            </div>
+            <div id=top_middle>
+
+            </div>
+            <div id=top_right>
+               <span id="date-time"></span>
+            </div>
+         </div>
+         <div id="middle">
+            <div class="room">
+                <br>
+                &nbsp;&nbsp;
+            	<span class="location">Master Bdrm:</span>
+            	<input id = "master_status" type="submit" display="inline-block" name="command2" value="Status" onclick = "MasterStatus()"/>
+            	<input id = "master_shutdown" type="submit" display="inline-block" name="command2" value="Shutdown" onclick = "MasterShutdown()"/>
+            	<br><br>
+                &nbsp;&nbsp;
+	    	<input id = "masterlight" type="submit" name="command2" value="Light" onclick = "MasterLight()"/>
+            	<input id = "masterlight_status" type="submit" display="inline-block" name="command2" value="?" onclick = "MasterLightStatus()"/>
+                &nbsp;
+            	<input id = "masterfan" type="submit" name="command2" value=" Fan " onclick = "MasterFan()"/>
+            	<input id = "masterfan_status" type="submit" name="command2" value="?" onclick = "MasterFanStatus()"/>
+                &nbsp;
+            	<input id = "mastertv" type="submit" name="command2" value="  TV  " onclick = "MasterTV()"/>
+            	<input id = "mastertv_status" type="submit" name="command2" value="?" onclick = "MasterTVStatus()"/>
+                &nbsp;
+            	<input id = "acu" type="submit" name="command2" value="ACU " onclick = "ACU()"/>
+            	<input id = "acu_status" type="submit" name="command2" value="?" onclick = "ACUStatus()"/>
+            	<br><br>
+                &nbsp;&nbsp;
+            	<label>ACU ON Period: </label>
+            	<select id="acuduration">
+                 	<option value="unlimited">unlimited</option>
+                 	<option value="30">30 mins</option>
+                 	<option value="60">1 hr</option>
+                 	<option value="90">1 hr 30 min</option>
+                 	<option value="120">2 hrs</option>
+                 	<option value="180">3 hrs</option>
+                 	<option value="240">4 hrs</option> 
+            	</select>
+            	--<input id ="refresh" type=submit value="reload" onclick = "Reload()">
+            	<br>
+                &nbsp;&nbsp;
+            	Run Fan when ACU turns OFF
+            	<input type="checkbox" id="on_fan" name="command2" value="ON">
+            </div>
+            <div class="room">
+                <br>
+                &nbsp;&nbsp;
+            	<span class="location">Joshua's Rm:</span>
+            	<input id = "joshua_status" type="submit" display="inline-block" name="command2" value="Status" onclick = "JoshuaStatus()"/>
+            	<input id = "joshua_shutdown" type="submit" display="inline-block" name="command2" value="Shutdown" onclick = "JoshuaShutdown()"/>
+                <br><br>
+                &nbsp;&nbsp;
+            	<input id = "joshua_acu" type="submit" name="command2" value="ACU " onclick = "JoshuaACU()"/>
+            	<input id = "joshua_acu_status" type="submit" name="command2" value="?" onclick = "JoshuaACUStatus()"/>
+            </div>
+            <div class="room">
+                <br>
+                &nbsp;&nbsp;
+                <span class="location">Dining Area:</span>
+                <input id = "dining_status" type="submit" display="inline-block" name="command2" value="Status" onclick = "DiningStatus()"/>
+                <br><br>
+                &nbsp;&nbsp;
+                <input id = "dininglight" type="submit" name="command2" value="Light" onclick = "DiningLight()"/>
+                <input id = "dininglight_status" type="submit" display="inline-block" name="command2" value="?" onclick = "DiningLightStatus()"/>
+            </div>
+	    <div class="room">
+                <br>
+                &nbsp;&nbsp;
+                <span class="location">EE/ECE Lab:</span>
+                <input id = "laboratory_status" type="submit" display="inline-block" name="command2" value="Status" onclick = "LaboratoryStatus()"/>
+                <input id = "laboratory_shutdown" type="submit" display="inline-block" name="command2" value="Shutdown" onclick = "LaboratoryShutdown()"/>
+                <br><br>
+                &nbsp;&nbsp;
+                <input id = "light" type="submit" name="command2" value="Light" onclick = "Light()"/>
+                <input id = "light_status" type="submit" display="inline-block" name="command2" value="?" onclick = "LightStatus()"/>
+                &nbsp;
+                <input id = "fan" type="submit" name="command2" value=" Fan " onclick = "Fan()"/>
+                <input id = "fan_status" type="submit" name="command2" value="?" onclick = "FanStatus()"/>
+                &nbsp;
+                <input id = "fan2" type="submit" name="command2" value=" Fan2 " onclick = "Fan2()"/>
+                <input id = "fan2_status" type="submit" name="command2" value="?" onclick = "Fan2Status()"/>
+
+            </div>
+                <div id=bottom1>
+                    <br>
+                    &nbsp;&nbsp;
+            	    <input id = "job_status" type="submit" display="inline-block" name="command2" value="Check Jobs" onclick = "CheckJobs()"/>
+            	    &nbsp;
+            	    <input id = "restart_server" type="submit" display="inline-block" name="command2" value="Restart Server" onclick = "RestartServer()"/>
+               	    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                	    <label for="command">Command:</label>
+           	    <input type="text" id="command" name="command" />
+           	    <input id = "command_text" type="submit" display="inline-block" name="command2" value="Submit" onclick = "SendCommand()"/>
+         	</div>
+
+         	<div id="bottom2">
+         	    <br>
+       	            <div id="MessageBar" float="left">
+            	    &nbsp;&nbsp;<span id = "message"> </span>
+            	    &nbsp;&nbsp;<span id = "message2"> </span>
+       	 	</div>
+
+         </div>
+
+      </div>
+   </body> 
+</html
